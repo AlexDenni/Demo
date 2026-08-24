@@ -3,7 +3,7 @@ name: Validate and Create Pull Request
 on:
   push:
     branches:
-      - "feature/**"
+      - "test-branch/**"
 
   workflow_dispatch:
 
