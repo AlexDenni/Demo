@@ -3,7 +3,7 @@ name: Validate and Create Pull Request
 on:
   push:
     branches:
-      - "feature/**"
+      - "test-branch/**"
 
   workflow_dispatch:
 
@@ -41,33 +41,32 @@ jobs:
 
           echo "SUCCESS: h1 heading exists"
 
-  create-pull-request:
+jobs:
+  create-pr:
     name: Create Pull Request
-    needs: validate
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download repository code
+      - name: Download repository
         uses: actions/checkout@v6
 
-      - name: Create PR if one does not exist
+      - name: Check and create pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXISTING_PR=$(gh pr list \
-            --head "$GITHUB_REF_NAME" \
+            --head test-branch \
             --base main \
             --state open \
             --json number \
             --jq '.[0].number // empty')
 
           if [ -n "$EXISTING_PR" ]; then
-            echo "Pull request #$EXISTING_PR already exists"
+            echo "PR #$EXISTING_PR already exists"
           else
             gh pr create \
+              --head test-branch \
               --base main \
-              --head "$GITHUB_REF_NAME" \
-              --title "Merge $GITHUB_REF_NAME into main" \
-              --body "This pull request was created automatically after successful validation."
+              --title "Merge test-branch into main" \
+              --body "This PR was created automatically by GitHub Actions."
           fi
