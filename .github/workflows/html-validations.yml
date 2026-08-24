@@ -1,0 +1,45 @@
+name: HTML Validation Pipeline
+
+on:
+  push:
+    branches:
+      - feature/html-validation
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate HTML Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download repository code
+        uses: actions/checkout@v6
+
+      - name: List repository files
+        run: ls -la
+
+      - name: Check index.html exists
+        run: |
+          if [ ! -f "index.html" ]; then
+            echo "ERROR: index.html was not found"
+            exit 1
+          fi
+
+          echo "SUCCESS: index.html exists"
+
+      - name: Check heading exists
+        run: |
+          if ! grep -q "<h1>" index.html; then
+            echo "ERROR: index.html does not contain an h1 heading"
+            exit 1
+          fi
+
+          echo "SUCCESS: h1 heading exists"
+
+      - name: Pipeline completion
+        run: echo "HTML validation completed successfully"
